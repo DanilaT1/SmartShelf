@@ -13,6 +13,7 @@ data class ProfileSummary(
     val xpNeededForLevel: Int = 100,
     val totalBooksFinished: Int = 0,
     val totalWordsAdded: Int = 0,
+    val appearance: AppAppearance = AppAppearance(),
 )
 
 data class QuizQuestion(

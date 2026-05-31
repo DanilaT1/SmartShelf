@@ -10,6 +10,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -23,6 +24,8 @@ import com.example.bookworm.ui.screens.DictionaryScreen
 import com.example.bookworm.ui.screens.HomeScreen
 import com.example.bookworm.ui.screens.ProfileScreen
 import com.example.bookworm.ui.theme.BookWormTheme
+import com.example.bookworm.data.repository.BookWormRepository
+import com.example.bookworm.model.AppAppearance
 import com.example.bookworm.viewmodel.ArchiveViewModel
 import com.example.bookworm.viewmodel.BookWormViewModelFactory
 import com.example.bookworm.viewmodel.DictionaryViewModel
@@ -32,14 +35,16 @@ import com.example.bookworm.viewmodel.ProfileViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val factory = BookWormViewModelFactory((application as BookWormApplication).appContainer.repository)
-        setContent { BookWormApp(factory) }
+        val repository = (application as BookWormApplication).appContainer.repository
+        val factory = BookWormViewModelFactory(repository)
+        setContent { BookWormApp(factory, repository) }
     }
 }
 
 @Composable
-private fun BookWormApp(factory: BookWormViewModelFactory) {
-    BookWormTheme {
+private fun BookWormApp(factory: BookWormViewModelFactory, repository: BookWormRepository) {
+    val appearance = repository.appearance.collectAsStateWithLifecycle(initialValue = AppAppearance()).value
+    BookWormTheme(appearance = appearance) {
         val navController = rememberNavController()
         val backStackEntry = navController.currentBackStackEntryAsState().value
         val currentRoute = backStackEntry?.destination?.route ?: BottomDestination.Home.route

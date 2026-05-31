@@ -3,19 +3,22 @@ package com.example.bookworm.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookworm.data.repository.BookWormRepository
+import com.example.bookworm.model.AppAppearance
 import com.example.bookworm.model.Levels
 import com.example.bookworm.model.ProfileSummary
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class ProfileViewModel(repository: BookWormRepository) : ViewModel() {
+class ProfileViewModel(private val repository: BookWormRepository) : ViewModel() {
     val uiState: StateFlow<ProfileSummary> = combine(
         repository.stats,
         repository.finishedBookCount,
         repository.wordCount,
-    ) { stats, books, words ->
+        repository.appearance,
+    ) { stats, books, words, appearance ->
         val info = Levels.infoFor(stats.currentXp)
         val span = info.nextThreshold - info.threshold
         val into = stats.currentXp - info.threshold
@@ -28,6 +31,11 @@ class ProfileViewModel(repository: BookWormRepository) : ViewModel() {
             xpNeededForLevel = span,
             totalBooksFinished = books,
             totalWordsAdded = words,
+            appearance = appearance,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProfileSummary())
+
+    fun updateAppearance(appearance: AppAppearance) = viewModelScope.launch {
+        repository.setAppearance(appearance)
+    }
 }

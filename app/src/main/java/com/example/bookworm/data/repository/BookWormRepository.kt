@@ -6,6 +6,8 @@ import com.example.bookworm.data.local.BookWormDao
 import com.example.bookworm.data.local.UserStatsEntity
 import com.example.bookworm.data.local.WordEntity
 import com.example.bookworm.data.preferences.ActiveBookPreferences
+import com.example.bookworm.data.preferences.AppearancePreferences
+import com.example.bookworm.model.AppAppearance
 import com.example.bookworm.model.Levels
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.map
 class BookWormRepository(
     private val dao: BookWormDao,
     private val activeBookPreferences: ActiveBookPreferences,
+    private val appearancePreferences: AppearancePreferences,
 ) {
     val activeBookId: Flow<Long?> = activeBookPreferences.activeBookId
     val readingBooks: Flow<List<BookEntity>> = dao.observeReadingBooks()
@@ -24,6 +27,7 @@ class BookWormRepository(
     val stats: Flow<UserStatsEntity> = dao.observeStats().map { it ?: UserStatsEntity() }
     val finishedBookCount: Flow<Int> = dao.observeFinishedBookCount()
     val wordCount: Flow<Int> = dao.observeWordCount()
+    val appearance: Flow<AppAppearance> = appearancePreferences.appearance
 
     val activeBook: Flow<BookEntity?> = activeBookId.combine(readingBooks) { activeId, books ->
         books.firstOrNull { it.id == activeId }
@@ -36,6 +40,8 @@ class BookWormRepository(
     }
 
     suspend fun setActiveBook(bookId: Long?) = activeBookPreferences.setActiveBookId(bookId)
+
+    suspend fun setAppearance(appearance: AppAppearance) = appearancePreferences.setAppearance(appearance)
 
     suspend fun addOrUpdateWord(
         id: Long = 0,

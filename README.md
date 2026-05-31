@@ -37,6 +37,18 @@ gradle wrapper --gradle-version 8.9 --distribution-type bin
 
 If your PR tool rejects binaries, do not commit `gradle/wrapper/gradle-wrapper.jar`.
 
+## How a friend can install the app
+
+For quick testing, build a debug APK in Android Studio and send that APK to your friend:
+
+1. In Android Studio, open this project and wait for Gradle sync.
+2. Select **Build → Build Bundle(s) / APK(s) → Build APK(s)**.
+3. When the build finishes, click **locate** in the Android Studio notification or open `app/build/outputs/apk/debug/app-debug.apk`.
+4. Send `app-debug.apk` to your friend by a trusted channel.
+5. On your friend's Android phone, enable installing apps from that source if Android asks, then open the APK to install it.
+
+For public distribution, do not share the debug APK. Create a signed release build with **Build → Generate Signed Bundle / APK**, then upload an Android App Bundle (`.aab`) to Google Play or share a signed release APK through your chosen distribution channel.
+
 ## Project facts
 
 - Minimum SDK: 24.
