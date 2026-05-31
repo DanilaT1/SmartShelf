@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SmartShelf"
+rootProject.name = "BookWorm"
 include(":app")
